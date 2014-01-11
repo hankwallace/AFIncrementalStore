@@ -274,26 +274,26 @@ withAttributeAndRelationshipValuesFromManagedObject:(NSManagedObject *)managedOb
             }
             
             for (NSManagedObject *relationshipManagedObject in relationshipValue) {
-				if (![[relationshipManagedObject objectID] isTemporaryID]) {
-					NSManagedObjectID *backingRelationshipObjectID = [self objectIDForBackingObjectForEntity:relationship.destinationEntity withResourceIdentifier:AFResourceIdentifierFromReferenceObject([self referenceObjectForObjectID:relationshipManagedObject.objectID])];
-					if (backingRelationshipObjectID) {
-						NSManagedObject *backingRelationshipObject = [backingObject.managedObjectContext existingObjectWithID:backingRelationshipObjectID error:nil];
-						if (backingRelationshipObject) {
-							[mutableBackingRelationshipValue addObject:backingRelationshipObject];
-						}
-					}
-				}
+                if (![[relationshipManagedObject objectID] isTemporaryID]) {
+                    NSManagedObjectID *backingRelationshipObjectID = [self objectIDForBackingObjectForEntity:relationship.destinationEntity withResourceIdentifier:AFResourceIdentifierFromReferenceObject([self referenceObjectForObjectID:relationshipManagedObject.objectID])];
+                    if (backingRelationshipObjectID) {
+                        NSManagedObject *backingRelationshipObject = [backingObject.managedObjectContext existingObjectWithID:backingRelationshipObjectID error:nil];
+                        if (backingRelationshipObject) {
+                            [mutableBackingRelationshipValue addObject:backingRelationshipObject];
+                        }
+                    }
+                }
             }
             
             [mutableRelationshipValues setValue:mutableBackingRelationshipValue forKey:relationship.name];
         } else {
-			if (![[relationshipValue objectID] isTemporaryID]) {
-				NSManagedObjectID *backingRelationshipObjectID = [self objectIDForBackingObjectForEntity:relationship.destinationEntity withResourceIdentifier:AFResourceIdentifierFromReferenceObject([self referenceObjectForObjectID:[relationshipValue objectID]])];
-				if (backingRelationshipObjectID) {
-					NSManagedObject *backingRelationshipObject = [backingObject.managedObjectContext existingObjectWithID:backingRelationshipObjectID error:nil];
+            if (![[relationshipValue objectID] isTemporaryID]) {
+                NSManagedObjectID *backingRelationshipObjectID = [self objectIDForBackingObjectForEntity:relationship.destinationEntity withResourceIdentifier:AFResourceIdentifierFromReferenceObject([self referenceObjectForObjectID:[relationshipValue objectID]])];
+                if (backingRelationshipObjectID) {
+                    NSManagedObject *backingRelationshipObject = [backingObject.managedObjectContext existingObjectWithID:backingRelationshipObjectID error:nil];
                     [mutableRelationshipValues setValue:backingRelationshipObject forKey:relationship.name];
-				}
-			}
+                }
+            }
         }
     }
     
@@ -453,8 +453,8 @@ withAttributeAndRelationshipValuesFromManagedObject:(NSManagedObject *)managedOb
     }
     
     NSManagedObjectContext *backingContext = [self backingManagedObjectContext];
-	NSFetchRequest *backingFetchRequest = [fetchRequest copy];
-	backingFetchRequest.entity = [NSEntityDescription entityForName:fetchRequest.entityName inManagedObjectContext:backingContext];
+    NSFetchRequest *backingFetchRequest = [fetchRequest copy];
+    backingFetchRequest.entity = [NSEntityDescription entityForName:fetchRequest.entityName inManagedObjectContext:backingContext];
 
     switch (fetchRequest.resultType) {
         case NSManagedObjectResultType: {
@@ -556,28 +556,28 @@ withAttributeAndRelationshipValuesFromManagedObject:(NSManagedObject *)managedOb
                     [context refreshObject:insertedObject mergeChanges:NO];
                 }
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				 NSLog(@"Insert Error: %@", error);
-				
-				// Reset destination objects to prevent dangling relationships
-				for (NSRelationshipDescription *relationship in [insertedObject.entity.relationshipsByName allValues]) {
-					if (!relationship.inverseRelationship) {
-						continue;
-					}
+                 NSLog(@"Insert Error: %@", error);
+                
+                // Reset destination objects to prevent dangling relationships
+                for (NSRelationshipDescription *relationship in [insertedObject.entity.relationshipsByName allValues]) {
+                    if (!relationship.inverseRelationship) {
+                        continue;
+                    }
 
                     id <NSFastEnumeration> destinationObjects = nil;
-					if ([relationship isToMany]) {
-						destinationObjects = [insertedObject valueForKey:relationship.name];
-					} else {
-						NSManagedObject *destinationObject = [insertedObject valueForKey:relationship.name];
-						if (destinationObject) {
-							destinationObjects = [NSArray arrayWithObject:destinationObject];
-						}
-					}
-					
-					for (NSManagedObject *destinationObject in destinationObjects) {
-						[context refreshObject:destinationObject mergeChanges:NO];
-					}
-				}
+                    if ([relationship isToMany]) {
+                        destinationObjects = [insertedObject valueForKey:relationship.name];
+                    } else {
+                        NSManagedObject *destinationObject = [insertedObject valueForKey:relationship.name];
+                        if (destinationObject) {
+                            destinationObjects = [NSArray arrayWithObject:destinationObject];
+                        }
+                    }
+                    
+                    for (NSManagedObject *destinationObject in destinationObjects) {
+                        [context refreshObject:destinationObject mergeChanges:NO];
+                    }
+                }
             }];
             
             [mutableOperations addObject:operation];
@@ -840,7 +840,7 @@ withAttributeAndRelationshipValuesFromManagedObject:(NSManagedObject *)managedOb
                     [self insertOrUpdateObjectsFromRepresentations:representationOrArrayOfRepresentations ofEntity:relationship.destinationEntity fromResponse:operation.response withContext:childContext error:nil completionBlock:^(NSArray *managedObjects, NSArray *backingObjects) {
                         NSManagedObject *managedObject = [childContext objectWithID:objectID];
                         
-						NSManagedObjectID *backingObjectID = [self objectIDForBackingObjectForEntity:[objectID entity] withResourceIdentifier:AFResourceIdentifierFromReferenceObject([self referenceObjectForObjectID:objectID])];
+                        NSManagedObjectID *backingObjectID = [self objectIDForBackingObjectForEntity:[objectID entity] withResourceIdentifier:AFResourceIdentifierFromReferenceObject([self referenceObjectForObjectID:objectID])];
                         NSManagedObject *backingObject = (backingObjectID == nil) ? nil : [[self backingManagedObjectContext] existingObjectWithID:backingObjectID error:nil];
 
                         if ([relationship isToMany]) {
@@ -872,8 +872,8 @@ withAttributeAndRelationshipValuesFromManagedObject:(NSManagedObject *)managedOb
                 NSLog(@"Error: %@, %@", operation, error);
                 [self notifyManagedObjectContext:context aboutRequestOperation:operation forNewValuesForRelationship:relationship forObjectWithID:objectID];
             }];
-			
-			[self notifyManagedObjectContext:context aboutRequestOperation:operation forNewValuesForRelationship:relationship forObjectWithID:objectID];
+            
+            [self notifyManagedObjectContext:context aboutRequestOperation:operation forNewValuesForRelationship:relationship forObjectWithID:objectID];
             [self.HTTPClient enqueueHTTPRequestOperation:operation];
         }
     }
