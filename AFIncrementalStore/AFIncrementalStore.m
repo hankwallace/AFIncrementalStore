@@ -553,7 +553,9 @@ withAttributeAndRelationshipValuesFromManagedObject:(NSManagedObject *)managedOb
                     [context obtainPermanentIDsForObjects:[NSArray arrayWithObject:insertedObject] error:nil];
                     [insertedObject didChangeValueForKey:@"objectID"];
 
-                    [context refreshObject:insertedObject mergeChanges:NO];
+                    // The following line causes problems with a to-one relationship that is not faulted. It was added to fix a problem
+                    // with Parse.com, but doesn't work correctly with my RoR backend.
+                    // [context refreshObject:insertedObject mergeChanges:NO];
                 }
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                  NSLog(@"Insert Error: %@", error);
@@ -610,11 +612,16 @@ withAttributeAndRelationshipValuesFromManagedObject:(NSManagedObject *)managedOb
                         [backingContext save:nil];
                     }];
 
-                    [context refreshObject:updatedObject mergeChanges:NO];
+                    // The following line causes problems with a to-one relationship that is not faulted. It was added to fix a problem
+                    // with Parse.com, but doesn't work correctly with my RoR backend.
+                    // [context refreshObject:updatedObject mergeChanges:NO];
                 }
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                 NSLog(@"Update Error: %@", error);
-                [context refreshObject:updatedObject mergeChanges:NO];
+                
+                // The following line causes problems with a to-one relationship that is not faulted. It was added to fix a problem
+                // with Parse.com, but doesn't work correctly with my RoR backend.
+                // [context refreshObject:updatedObject mergeChanges:NO];
             }];
             
             [mutableOperations addObject:operation];
