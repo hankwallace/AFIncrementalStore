@@ -617,11 +617,8 @@ withAttributeAndRelationshipValuesFromManagedObject:(NSManagedObject *)managedOb
                     // [context refreshObject:updatedObject mergeChanges:NO];
                 }
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                NSLog(@"Update Error: %@", error);
-                
-                // The following line causes problems with a to-one relationship that is not faulted. It was added to fix a problem
-                // with Parse.com, but doesn't work correctly with my RoR backend.
-                // [context refreshObject:updatedObject mergeChanges:NO];
+                NSLog(@"Update Error: %@", error);                
+                [context refreshObject:updatedObject mergeChanges:NO];
             }];
             
             [mutableOperations addObject:operation];
